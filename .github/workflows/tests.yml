@@ -1,0 +1,97 @@
+name: Tests
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+        - php: 8.1
+          wp: latest
+        - php: 7.4
+          wp: latest
+        - php: 7.3
+          wp: latest
+        - php: 7.2
+          wp: latest
+        - php: 7.1
+          wp: latest
+        - php: 7.0
+          wp: latest
+        - php: 5.6
+          wp: 4.6.2
+        - php: 5.6
+          wp: latest
+        - php: 5.6
+          wp: trunk
+
+    services:
+      db:
+        image: mariadb:10.4
+        env:
+          MYSQL_ROOT_PASSWORD: wordpress
+          MYSQL_DATABASE: wordpress
+          MYSQL_USER: wordpress
+          MYSQL_PASSWORD: wordpress
+        ports:
+          - 33060:3306
+        options: >-
+          --health-cmd="mysqladmin -proot ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, gd, imagick, xml, soap, dom, curl, zip, exif, iconv, mysqli, pdo_mysql, opcache, xdebug
+          coverage: none
+          tools: composer:v2
+
+      - name: Setup Tests
+        run: |
+          bash bin/install-wp-tests.sh wordpress wordpress wordpress db ${{ matrix.wp }}
+          composer global require "phpunit/phpunit=4.8.*|5.7.*"
+
+      - name: Run tests
+        run: |
+          phpunit
+          WP_MULTISITE=1 phpunit
+
+  static_code_check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          extensions: mbstring, intl, gd, imagick, xml, soap, dom, curl, zip, exif, iconv, mysqli, pdo_mysql, opcache, xdebug
+          coverage: none
+          tools: composer:v2
+
+      - name: Setup Tests
+        run: |
+          composer global require wp-coding-standards/wpcs
+          composer global require phpcompatibility/php-compatibility
+          composer global require phpcompatibility/phpcompatibility-paragonie
+          composer global require phpcompatibility/phpcompatibility-wp
+          phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs,$HOME/.composer/vendor/phpcompatibility/php-compatibility,$HOME/.composer/vendor/phpcompatibility/phpcompatibility-paragonie,$HOME/.composer/vendor/phpcompatibility/phpcompatibility-wp
+
+      - name: Run static code check
+        run: |
+          phpcs
