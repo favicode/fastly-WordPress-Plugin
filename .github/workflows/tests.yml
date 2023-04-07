@@ -55,7 +55,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, intl, gd, imagick, xml, soap, dom, curl, zip, exif, iconv, mysqli, pdo_mysql, opcache, xdebug
+          extensions: mbstring, intl, gd, imagick, xml, soap, dom, curl, zip, exif, iconv, mysqli, pdo_mysql, opcache, xdebug, phpunit-polyfills
           coverage: none
           tools: composer:v2
 
