@@ -62,7 +62,7 @@ jobs:
 
       - name: Setup Tests
         run: |
-          bash bin/install-wp-tests.sh wordpress wordpress wordpress db ${{ matrix.wp }}
+          bash bin/install-wp-tests.sh wordpress wordpress wordpress 127.0.0.1:33060 ${{ matrix.wp }}
           composer global require "phpunit/phpunit=4.8.*|5.7.*"
 
       - name: Run tests
