@@ -136,7 +136,6 @@ class Fastly_Edgemodules
     protected function renderGroup($group, $values, $suffix)
     {
         $values = $values ?: [];
-        $numberOfValues = count($values);
         $name = "{$suffix}[{$group->name}]";
         $suffix = "{$suffix}-{$group->name}";
         ?>
@@ -152,9 +151,9 @@ class Fastly_Edgemodules
         </tr>
         <tr>
             <td>
-                <?php for ($i = 0; $i < $numberOfValues; $i++): ?>
-                    <?php $this->renderGroupProperties($group->properties, $values[$i], "{$name}[$i]", "{$suffix}-{$i}"); ?>
-                <?php endfor; ?>
+                <?php foreach($values as $key => $value): ?>
+                    <?php $this->renderGroupProperties($group->properties, $value, "{$name}[$key]", "{$suffix}-{$key}"); ?>
+                <?php endforeach; ?>
                 <template id="<?php echo $suffix.'-template'; ?>">
                     <?php $this->renderGroupProperties($group->properties, [], "{$name}[x]", 'container'); ?>
                 </template>
