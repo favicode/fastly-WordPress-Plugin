@@ -46,7 +46,7 @@ class Purgely_Purge
      *
      * @param  string $type The type of purge request.
      * @param  string|array $thing The identifier for the item to purge.
-     * @return array|bool|WP_Error The response from the purge request.
+     * @return bool The response from the purge request.
      */
     public function purge($type = self::URL, $thing = '')
     {

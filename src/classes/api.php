@@ -138,7 +138,7 @@ class Fastly_Api
     public function snippet_exists($name, $version = null)
     {
         $result = $this->get_snippet($name, $version);
-        return (bool) $result->id;
+        return (bool) (isset($result->id) ? $result->id : 0);
     }
 
     public function upload_snippet($version, $snippet)
@@ -157,7 +157,12 @@ class Fastly_Api
             }
         }
 
-        $result = json_decode(Requests::request($url, $this->headers_post, $snippet, $verb)->body);
+        try {
+            $result = json_decode(Requests::request($url, $this->headers_post, $snippet, $verb)->body);
+        } catch (\WpOrg\Requests\Exception $e) {
+            error_log("Error in making request for snippet upload: " . $e->getMessage());
+            return false;
+        }
         if (!isset($result->id) || !$result->id) {
             $this->show_error($result->detail);
             return false;

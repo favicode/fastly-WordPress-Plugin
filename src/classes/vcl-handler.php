@@ -88,7 +88,7 @@ class Vcl_Handler
 
         $this->_last_version_data = $this->get_last_version();
 
-        if ($this->_last_version_data) {
+        if (isset($this->_last_version_data->number)) {
             $this->_last_active_version_num = $this->_last_version_data->number;
         }
 
@@ -375,7 +375,7 @@ class Vcl_Handler
      */
     public function clone_last_active_version()
     {
-        if (empty($this->_last_version_data)) {
+        if (empty($this->_last_version_data->number)) {
             return false;
         }
 
@@ -416,7 +416,13 @@ class Vcl_Handler
                     }
                 } else {
                     // Delete Condition
-                    return $this->delete_condition($single_condition_data['name']);
+                    try {
+                        return $this->delete_condition($single_condition_data['name']);
+                    } catch (\WpOrg\Requests\Exception $e) {
+                        error_log("Error in deleting condition: " . $e->getMessage());
+                        $this->add_error(__('Error occured while deleting condition.'));
+                        return false;
+                    }
                 }
 
             }
@@ -457,7 +463,7 @@ class Vcl_Handler
     /**
      * Prepare condition for insert
      * @data
-     * @return array
+     * @return array|bool
      */
     public function insert_condition($data)
     {
@@ -469,7 +475,12 @@ class Vcl_Handler
             'type' => Requests::POST
         );
 
-        $response = Requests::request($request['url'], $this->_headers_post, $request['data'], $request['type']);
+        try {
+            $response = Requests::request($request['url'], $this->_headers_post, $request['data'], $request['type']);
+        } catch (\WpOrg\Requests\Exception $e) {
+            error_log("Error in making request for conditions: " . $e->getMessage());
+            return false;
+        }
 
         if ($response->success) {
             return array();
@@ -481,8 +492,9 @@ class Vcl_Handler
     /**
      * Prepare condition for deletion
      * @param $name
-     * @return array|bool
+     * @return array
      * @throws Requests_Exception
+     * @throws \WpOrg\Requests\Exception
      */
     public function delete_condition($name)
     {
@@ -528,7 +540,13 @@ class Vcl_Handler
                     }
                 } else {
                     // Delete Condition
-                    return $this->delete_header($single_header_data['name']);
+                    try {
+                        return $this->delete_header($single_header_data['name']);
+                    } catch (\WpOrg\Requests\Exception $e) {
+                        error_log("Error in preparing header for deletion: " . $e->getMessage());
+                        $this->add_error(__('Error occured while deleting header.'));
+                        return false;
+                    }
                 }
             }
         }
@@ -568,7 +586,7 @@ class Vcl_Handler
     /**
      * Prepare header for insert
      * @data
-     * @return array
+     * @return array|bool
      */
     public function insert_header($data)
     {
@@ -580,7 +598,12 @@ class Vcl_Handler
             'type' => Requests::POST
         );
 
-        $response = Requests::request($request['url'], $this->_headers_post, $request['data'], $request['type']);
+        try {
+            $response = Requests::request($request['url'], $this->_headers_post, $request['data'], $request['type']);
+        } catch (\WpOrg\Requests\Exception $e) {
+            error_log("Error in making request for inserting header: " . $e->getMessage());
+            return false;
+        }
 
         if ($response->success) {
             return array();
@@ -592,8 +615,9 @@ class Vcl_Handler
     /**
      * Prepare header for deletion
      * @param $name
-     * @return array|bool
+     * @return array
      * @throws Requests_Exception
+     * @throws \WpOrg\Requests\Exception
      */
     public function delete_header($name)
     {
@@ -755,7 +779,7 @@ class Vcl_Handler
     /**
      * Fetches response object data by name
      * @name string
-     * @return bool
+     * @return \WpOrg\Requests\Response|bool
      */
     public function get_response_object_data($name)
     {

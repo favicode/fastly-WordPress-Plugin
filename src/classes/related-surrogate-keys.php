@@ -156,8 +156,7 @@ class Purgely_Related_Surrogate_Keys
     public function locate_author_surrogate_key($post_id)
     {
 
-        if ($post = $this->get_post($post_id)) {
-            $post->post_author;
+        if ($post = $this->get_post()) {
             $key = 'a-' . absint($post->post_author);
             $this->_collection[] = $key;
         }

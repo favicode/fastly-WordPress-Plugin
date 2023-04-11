@@ -43,7 +43,7 @@ class Fastly_Edgemodules
             </div>
             Fastly Edge Modules is a framework that allows you to enable specific functionality on Fastly without needing to write any VCL code.
 	    Below is a list of functions you can enable. Some may have additional options you can configure. To enable or disable click
-            on the <strong>Manage</strong> button next to the functionality you want to enable, configure any available options then click <strong>Upload</strong>.  
+            on the <strong>Manage</strong> button next to the functionality you want to enable, configure any available options then click <strong>Upload</strong>.
             To disable/remove the module click on <strong>Manage</strong> then click on <strong>Disable</strong>.
             <table class="form-table">
                 <tbody>
@@ -79,7 +79,7 @@ class Fastly_Edgemodules
                 <input type="hidden" id="<?php echo "{$module->id}-snippet"; ?>" name="<?php echo "{$module->id}[snippet]"; ?>">
                 <table class="form-table">
                     <tbody>
-                    <?php if($module->properties): ?>
+                    <?php if(!empty($module->properties)): ?>
                         <?php foreach($module->properties as $property): ?>
                             <?php if($property->type === 'group'): ?>
                                 <?php $this->renderGroup($property, (isset($module->data[$property->name])) ? $module->data[$property->name] : null, $module->id); ?>
@@ -107,7 +107,8 @@ class Fastly_Edgemodules
                 <input type="hidden" name="nonce" value="<?php echo wp_create_nonce('fastly-edge-modules-disable'); ?>">
                 <input type="hidden" name="action" value="fastly_module_disable_form">
                 <input type="hidden" name="module_name" value='<?php echo $module->id; ?>'>
-                <?php for ($i = 0; $i < count($module->vcl); $i++): ?>
+                <?php $moduleVcls = count($module->vcl)?>
+                <?php for ($i = 0; $i < $moduleVcls; $i++): ?>
                     <input type="hidden" name="types[<?php echo $i; ?>]" value='<?php echo $module->vcl[$i]->type; ?>'>
                 <?php endfor; ?>
             </form>
@@ -134,7 +135,8 @@ class Fastly_Edgemodules
 
     protected function renderGroup($group, $values, $suffix)
     {
-        $values = $values ? $values : [];
+        $values = $values ?: [];
+        $numberOfValues = count($values);
         $name = "{$suffix}[{$group->name}]";
         $suffix = "{$suffix}-{$group->name}";
         ?>
@@ -150,7 +152,7 @@ class Fastly_Edgemodules
         </tr>
         <tr>
             <td>
-                <?php for ($i = 0; $i < count($values); $i++): ?>
+                <?php for ($i = 0; $i < $numberOfValues; $i++): ?>
                     <?php $this->renderGroupProperties($group->properties, $values[$i], "{$name}[$i]", "{$suffix}-{$i}"); ?>
                 <?php endfor; ?>
                 <template id="<?php echo $suffix.'-template'; ?>">
@@ -168,7 +170,7 @@ class Fastly_Edgemodules
             <table class="form-table">
                 <tbody>
                 <?php foreach($properties as $property): ?>
-                    <?php $this->renderProperty($name, $property, $values[$property->name]); ?>
+                    <?php $this->renderProperty($name, $property, isset($values[$property->name]) ? $values[$property->name] : null); ?>
                 <?php endforeach; ?>
                 </tbody>
             </table>
@@ -191,7 +193,7 @@ class Fastly_Edgemodules
             </th>
             <td>
                 <?php echo $this->renderField($name, $property, $value); ?>
-                <p><small><em><?php echo $property->description; ?></em></small></p>
+                <p><small><em><?php echo isset($property->description) ? $property->description : ""; ?></em></small></p>
             </td>
         </tr>
         <?php

@@ -8,12 +8,13 @@ class Purgely_Settings
 
     const FASTLY_CONFIGURATION_LIST_GENERAL = 'general';
     const FASTLY_CONFIGURATION_LIST_ADVANCED = 'advanced';
+    const FASTLY_CONFIGURATION_LIST_IO = 'io';
     const FASTLY_CONFIGURATION_LIST_WEBHOOKS = 'webhooks';
 
     static $lists = array(
         self::FASTLY_CONFIGURATION_LIST_GENERAL =>  'fastly-settings-general',
         self::FASTLY_CONFIGURATION_LIST_ADVANCED => 'fastly-settings-advanced',
-        self::FASTLY_CONFIGURATION_LIST_ADVANCED => 'fastly-settings-io',
+        self::FASTLY_CONFIGURATION_LIST_IO => 'fastly-settings-io',
         self::FASTLY_CONFIGURATION_LIST_WEBHOOKS => 'fastly-settings-webhooks'
     );
 

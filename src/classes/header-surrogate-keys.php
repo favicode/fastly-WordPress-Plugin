@@ -25,7 +25,7 @@ class Purgely_Surrogate_Keys_Header extends Purgely_Header
     /**
      * Add multiple keys to the list.
      *
-     * @param  string $keys The keys to add to the list.
+     * @param  array $keys The keys to add to the list.
      */
     public function add_keys($keys)
     {
