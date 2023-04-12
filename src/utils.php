@@ -204,7 +204,11 @@ function send_web_hook($message)
     );
 
     try {
-        $response = Requests::request($webhook_url, $headers, $data, Requests::POST);
+        // TODO: @bbutkovic - see below
+        $options = array(
+            'verify' => 1,
+        );
+        $response = Requests::request($webhook_url, $headers, $data, Requests::POST, $options);
         if (!$response->success) {
             if (Purgely_Settings::get_setting('fastly_debug_mode')) {
                 error_log("Webhooks request failed, error: " . json_decode($response->body));
@@ -237,7 +241,12 @@ function test_web_hook()
     );
 
     try {
-        $response = Requests::request($webhook_url, $headers, $data, Requests::POST);
+
+        // TODO: @bbutkovic - used because SSL verification on older WP versions is outdated - this forces use of system certificate bundle instead of WP one
+        $options = array(
+            'verify' => 1,
+        );
+        $response = Requests::request($webhook_url, $headers, $data, Requests::POST, $options);
         $message = $response->success ? __('Connection Successful!') : __($response->body);
 
         if (Purgely_Settings::get_setting('fastly_debug_mode')) {
