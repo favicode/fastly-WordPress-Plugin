@@ -132,7 +132,12 @@ class Fastly_Api
     {
         $v = is_null($version) ? $this->get_active_version()->number : $version;
         $url = $this->base_url . "version/{$v}/snippet/{$name}";
-        return json_decode(Requests::get($url, $this->headers_get)->body);
+        try {
+            return json_decode(Requests::get($url, $this->headers_get)->body);
+        } catch (\Exception $e) {
+            error_log("Error in getting snippet: " . $e->getMessage());
+            return null;
+        }
     }
 
     public function snippet_exists($name, $version = null)

@@ -233,7 +233,7 @@ class Fastly_Edgemodules
                 };
                 return "<select style='width: 100%;' id='{$id}' name='{$name}' {$required}>{$options}</select>";
             case 'boolean':
-                $value = $value === 'true';
+                $value = ($value === 'true' || $value === "1");
                 $options = implode('', [
                     "<option value='' ".(!$value ? 'selected' : '').">No</option>",
                     "<option value='1' ".($value ? 'selected' : '').">Yes</option>",
