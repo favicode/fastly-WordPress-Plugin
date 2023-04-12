@@ -12,7 +12,16 @@ class EdgeModules
         var target = template.parentElement;
 
         var clone = template.content.cloneNode(true);
-        var count = document.querySelectorAll(`div[id^="${id}"]`).length;
+
+        var rewriteRules = document.querySelectorAll(`div[id^="${id}"]`);
+        var count = 0;
+
+        if (rewriteRules.length) {
+            // Get index of the last group and increment it by 1 - removes duplicate key which occurred when using .length
+            var lastRewriteRule = [...rewriteRules].pop();
+            count = parseInt(lastRewriteRule.id.match(/\d+/)[0]) + 1;
+        }
+
         clone.querySelector('#container').id = `${id}-${count}`;
 
         var list = clone.querySelectorAll(`[name^="${name}"]`);
