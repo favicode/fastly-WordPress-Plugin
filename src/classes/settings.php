@@ -128,7 +128,7 @@ class Purgely_Settings
             ),
             'io_adaptive_pixel_ratio_sizes' => array(
                 'sanitize_callback' => 'purgely_sanitize_pixel_ratios',
-                'default' => PURGELY_FASTLY_IO_ADAPTIVE_PIXEL_SIZES,
+                'default' => explode(",",PURGELY_FASTLY_IO_ADAPTIVE_PIXEL_SIZES),
             ),
             'webhooks_url_endpoint' => array(
                 'sanitize_callback' => 'esc_url',
